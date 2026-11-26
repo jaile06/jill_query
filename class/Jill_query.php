@@ -1,6 +1,7 @@
 <?php
 namespace XoopsModules\Jill_query;
 
+use Xmf\Request;
 use XoopsModules\Tadtools\CkEditor;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\SweetAlert2;
@@ -200,11 +201,11 @@ class Jill_query
     {
         global $xoopsDB;
 
-        $ispublic = (int) ($_POST['ispublic'] ?? 0);
+        $ispublic = Request::getInt('ispublic', 0, 'POST');
         $ispublic = in_array($ispublic, [0, 1, 2], true) ? $ispublic : 0;
 
         $all_groups = array_map('intval', array_keys(Tools::all_groups()));
-        $read_group = array_values(array_intersect(array_map('intval', (array) ($_POST['read_group'] ?? [])), $all_groups));
+        $read_group = array_values(array_intersect(array_map('intval', Request::getArray('read_group', [], 'POST')), $all_groups));
         if (2 === $ispublic) {
             // 以登入 Email 查詢時排除訪客
             $read_group = array_values(array_diff($read_group, [XOOPS_GROUP_ANONYMOUS]));
@@ -212,14 +213,14 @@ class Jill_query
         $read_group = array_map('strval', $read_group);
 
         return [
-            'title'       => Tools::filter('title', $_POST['title'] ?? '', 'write', self::$filter_arr),
-            'directions'  => Tools::filter('directions', $_POST['directions'] ?? '', 'write', self::$filter_arr),
-            'editorEmail' => $xoopsDB->escape(implode(';', Tools::email_list($_POST['editorEmail'] ?? ''))),
-            'isEnable'    => empty($_POST['isEnable']) ? 0 : 1,
-            'passwd'      => Tools::filter('passwd', $_POST['passwd'] ?? '', 'write', self::$filter_arr),
+            'title'       => Tools::filter('title', Request::getText('title', '', 'POST'), 'write', self::$filter_arr),
+            'directions'  => Tools::filter('directions', Request::getText('directions', '', 'POST'), 'write', self::$filter_arr),
+            'editorEmail' => $xoopsDB->escape(implode(';', Tools::email_list(Request::getText('editorEmail', '', 'POST')))),
+            'isEnable'    => Request::getInt('isEnable', 0, 'POST') ? 1 : 0,
+            'passwd'      => Tools::filter('passwd', Request::getText('passwd', '', 'POST'), 'write', self::$filter_arr),
             'ispublic'    => $ispublic,
             'read_group'  => $xoopsDB->escape(json_encode($read_group)),
-            'tag_sn'      => (int) ($_POST['tag_sn'] ?? 0),
+            'tag_sn'      => Request::getInt('tag_sn', 0, 'POST'),
         ];
     }
 

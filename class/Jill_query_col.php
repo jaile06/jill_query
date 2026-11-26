@@ -1,6 +1,7 @@
 <?php
 namespace XoopsModules\Jill_query;
 
+use Xmf\Request;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\Jeditable;
 use XoopsModules\Tadtools\SweetAlert2;
@@ -143,13 +144,13 @@ class Jill_query_col
             redirect_header(XOOPS_URL . '/modules/jill_query/admin/main.php', 3, _MA_JILLQUERY_EMPTYQSN);
         }
 
-        $title = $xoopsDB->escape(trim((string) ($_POST['qc_title'] ?? '')));
+        $title = $xoopsDB->escape(Request::getText('qc_title', '', 'POST'));
         if ('' === $title) {
             return;
         }
-        $search   = empty($_POST['qcsnSearch']) ? 0 : 1;
-        $show     = empty($_POST['isShow']) ? 0 : 1;
-        $like     = ($search && !empty($_POST['isLike'])) ? 1 : 0;
+        $search   = Request::getInt('qcsnSearch', 0, 'POST') ? 1 : 0;
+        $show     = Request::getInt('isShow', 0, 'POST') ? 1 : 0;
+        $like     = ($search && Request::getInt('isLike', 0, 'POST')) ? 1 : 0;
         $operator = self::operator($qsn);
         $sort     = self::max_sort($qsn);
 
@@ -234,7 +235,7 @@ class Jill_query_col
         Tools::chk_admin();
         $qsn  = (int) $qsn;
         $sort = 1;
-        foreach ((array) ($_POST['tr'] ?? []) as $qcsn) {
+        foreach (Request::getArray('tr', [], 'POST') as $qcsn) {
             $sql = 'UPDATE `' . $xoopsDB->prefix('jill_query_col') . "` SET `qcSort` = '{$sort}' WHERE `qcsn` = '" . (int) $qcsn . "' AND `qsn` = '{$qsn}'";
             if (!$xoopsDB->queryF($sql)) {
                 return _TAD_SORT_FAIL;
@@ -252,7 +253,7 @@ class Jill_query_col
         $qsn = (int) $qsn;
 
         $query    = Jill_query::get($qsn);
-        $operator = ('or' === ($_POST['search_operator'] ?? '') && 2 !== (int) ($query['ispublic'] ?? 0)) ? 'or' : 'and';
+        $operator = ('or' === Request::getString('search_operator', '', 'POST') && 2 !== (int) ($query['ispublic'] ?? 0)) ? 'or' : 'and';
         $sql = 'UPDATE `' . $xoopsDB->prefix('jill_query_col') . "` SET `search_operator` = '{$operator}' WHERE `qsn` = '{$qsn}' AND `qcsnSearch` = '1'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     }

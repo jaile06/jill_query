@@ -1,6 +1,7 @@
 <?php
 namespace XoopsModules\Jill_query;
 
+use Xmf\Request;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\Jeditable;
 use XoopsModules\Tadtools\SweetAlert2;
@@ -58,13 +59,13 @@ class Jill_query_data
         }
 
         // 密碼一律比對（不送密碼欄位也擋）
-        if ('' !== (string) $query['passwd'] && !hash_equals((string) $query['passwd'], (string) ($_POST['passwd'] ?? ''))) {
+        if ('' !== (string) $query['passwd'] && !hash_equals((string) $query['passwd'], Request::getText('passwd', '', 'POST'))) {
             redirect_header($back, 3, _MD_JILLQUERY_PASSWDERROR);
         }
 
         $search_cols = Jill_query_col::search_cols($qsn);
         $operator    = Jill_query_col::operator($qsn);
-        $input       = (array) ($_POST['fillValue'] ?? []);
+        $input       = (array) Request::getVar('fillValue', [], 'POST', 'array', Request::MASK_ALLOW_RAW);
 
         $sets = [];
         foreach ($search_cols as $qcsn => $col) {
@@ -204,8 +205,8 @@ class Jill_query_data
         $qsn = (int) $query['qsn'];
 
         $cols    = Jill_query_col::get_all($qsn);
-        $keyword = trim((string) ($_REQUEST['keyword'] ?? ''));
-        $kw_qcsn = (int) ($_REQUEST['kw_qcsn'] ?? 0);
+        $keyword = Request::getText('keyword');
+        $kw_qcsn = Request::getInt('kw_qcsn');
         $sn_tb   = $xoopsDB->prefix('jill_query_sn');
 
         if ('' !== $keyword && isset($cols[$kw_qcsn])) {
@@ -266,7 +267,7 @@ class Jill_query_data
             redirect_header($back, 3, _MD_JILLQUERY_NOCOL);
         }
 
-        if ('on' !== ($_POST['continue_no'] ?? '')) {
+        if ('on' !== Request::getString('continue_no', '', 'POST')) {
             self::delete_rows($qsn, Tools::uid());
         }
         $start = self::max_sort($qsn);

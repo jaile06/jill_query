@@ -1,6 +1,7 @@
 <?php
 namespace XoopsModules\Jill_query;
 
+use Xmf\Request;
 use XoopsModules\Tadtools\MColorPicker;
 use XoopsModules\Tadtools\SweetAlert2;
 use XoopsModules\Tadtools\Utility;
@@ -74,10 +75,10 @@ class Jill_query_tags
     {
         global $xoopsDB;
         return [
-            'tag'        => $xoopsDB->escape(trim((string) ($_POST['tag'] ?? ''))),
-            'font_color' => self::color($_POST['font_color'] ?? '', '#ffffff'),
-            'color'      => self::color($_POST['color'] ?? '', '#6c757d'),
-            'enable'     => empty($_POST['enable']) ? 0 : 1,
+            'tag'        => $xoopsDB->escape(Request::getText('tag', '', 'POST')),
+            'font_color' => self::color(Request::getString('font_color', '', 'POST'), '#ffffff'),
+            'color'      => self::color(Request::getString('color', '', 'POST'), '#6c757d'),
+            'enable'     => Request::getInt('enable', 0, 'POST') ? 1 : 0,
         ];
     }
 

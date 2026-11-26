@@ -75,5 +75,6 @@
 ## 6. 模組特有注意事項
 
 - Smarty 為 4.5（兩站皆是）：不可用 `includeq`，也不可把 PHP 函式當修飾器（`in_array`、`count`、`basename` 會產生棄用警告），需要的值在 PHP 端算好再 assign。
+- 取參數一律用 `Xmf\Request`。使用者會輸入的文字（標題、密碼、欄位名、查詢值、儲存格、標籤）用 `getText`，陣列查詢值用 `getVar(..., 'array', Request::MASK_ALLOW_RAW)`；`getString` 會剝掉 HTML，「<5歲」這類內容會被改掉。寫入時 escape、輸出時跳脫。
 - 區塊函式先 `Tools::get_session()` 再判斷權限；`language/*/blocks.php` 不可重複定義 `language/tchinese_utf8/main.php` 已有的常數（區塊會另外載入 main）。
 - 2.5.11 測試站的 `php83/php_production.ini` 未開 `extension=zip`，在那裡測 `.xlsx` 匯入會出現缺 zip 的提示，屬環境問題。
