@@ -65,3 +65,8 @@ define('_MD_JILLQUERY_STEP', '步驟');
 define('_MD_JILLQUERY_STEP2', '匯入Excel 檔案，第一行務必為欄位名稱');
 define('_MD_JILLQUERY_PASSWDERROR', '密碼輸入錯誤');
 define('_MD_JILLQUERY_PASSWD', '輸入查詢密碼');
+define('_MD_JILLQUERY_NEED_TADBASE', '需先安裝 tad_base 模組（提供 PhpSpreadsheet）才能讀寫 Excel');
+define('_MD_JILLQUERY_NEED_LOGIN', '此查詢需要先登入');
+define('_MD_JILLQUERY_USER_NAME', '姓名');
+define('_MD_JILLQUERY_NEED_ZIP', '伺服器的 PHP 未啟用 zip 擴充，無法讀取 .xlsx；請改存成 .xls，或請管理者在 php.ini 開啟 extension=zip');
+define('_MD_JILLQUERY_BAD_FILE', '只接受 .xlsx 或 .xls 檔，或檔案內容無法讀取');

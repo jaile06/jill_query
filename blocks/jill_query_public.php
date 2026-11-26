@@ -1,90 +1,44 @@
 <?php
+use XoopsModules\Jill_query\Tools;
+use XoopsModules\Jill_query\Jill_query;
+use XoopsModules\Jill_query\Jill_query_data;
 
-/**
- * A module
- *
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * @copyright  The XOOPS Project http://sourceforge.net/projects/xoops/
- * @license    http://www.fsf.org/copyleft/gpl.html GNU public license
- * @package    A
- * @since      a
- * @author     a
- * @version    $Id $
- **/
-use XoopsModules\Tadtools\Utility;
-
-include_once XOOPS_ROOT_PATH . "/modules/jill_query/function_block.php";
-//區塊主函式 (jill_query_public)
-function jill_query_public($options)
-{
-    global $xoopsDB, $xoTheme;
-    //die($options[0] . "asd");
-    if (empty($options)) {
-        return;
-    }
-    $show_nums      = empty($options[1]) ? 20 : $options[1];
-    $query_arr      = get_jill_query($options[0]);
-    $title_arr      = get_jill_query_allcol_qsn($options[0]);
-    $title_show_arr = filter_by_value($title_arr, 'isShow', '1');
-    $qcsn_arr       = array_keys($title_show_arr);
-
-    $myts = \MyTextSanitizer::getInstance();
-    $sql  = "select ssn, qrSort  from `" . $xoopsDB->prefix("jill_query_sn") . "`
-    where `qsn`='{$options[0]}' order by `qrSort` limit 0,{$show_nums} ";
-
-    $result           = $xoopsDB->query($sql) or Utility::web_error($sql);
-    $block['content'] = array();
-    while (list($ssn, $qrSort) = $xoopsDB->fetchRow($result)) {
-        foreach ($title_show_arr as $qcsn => $qc_arr) {
-            $block['content'][$ssn]['col_data'][$qcsn] = get_jill_query_col_fillValue_qsn($ssn, $qcsn);
-        }
-        $block['content'][$ssn]['qrSort'] = $qrSort;
-    }
-    $block['title_arr'] = $title_show_arr;
-    //die(var_dump($block));
-    $block['query_arr'] = $query_arr;
-    $block['qsn']       = $options[0];
-    return $block;
+if (!class_exists('XoopsModules\Jill_query\Tools')) {
+    require XOOPS_ROOT_PATH . '/modules/jill_query/preloads/autoloader.php';
 }
 
-//區塊編輯函式 (jill_query_public_edit)
+//區塊：公開事件的前 N 筆資料
+function jill_query_public($options)
+{
+    Tools::get_session();
+    $query = Jill_query::get($options[0] ?? 0);
+    if (empty($query) || empty($query['isEnable']) || 1 !== (int) $query['ispublic'] || !Tools::group_perm($query['read_group_arr'])) {
+        return [];
+    }
+    xoops_loadLanguage('main', 'jill_query');
+    $limit = max(1, min(200, (int) ($options[1] ?? 20)));
+    $data  = Jill_query_data::public_rows($query, $limit);
+
+    return [
+        'qsn'      => (int) $query['qsn'],
+        'title'    => htmlspecialchars($query['title'], ENT_QUOTES, 'UTF-8'),
+        'show_col' => $data['show_col'],
+        'result'   => $data['result'],
+    ];
+}
+
+//區塊編輯：選擇公開事件、顯示筆數
 function jill_query_public_edit($options)
 {
-    $default_qsn = (empty($options[0])) ? "" : $options[0];
-
-    $option = get_public_menu_options($default_qsn);
-
-    //die(var_dump($opt_arr));
-    $form = "
-  <table>
-  	<tr>
-      <th>
-        <!--選擇公開事件 -->
-        " . _MB_JILL_QUERY_PUBLIC_OPT0 . "
-      </th>
-      <td>
-        <select name='options[0]'>
-            <option value=''>" . _MB_JILL_QUERY__OPT0 . "</option>
-			   {$option}
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>
-        <!--秀幾筆 -->
-        " . _MB_JILL_QUERY_PUBLIC_OPT1 . "
-      </th>
-      <td>
-        <input type='text' name='options[1]' value='{$options[1]}'>
-      </td>
-    </tr>
-  </table>
-  ";
-    return $form;
+    $default = (int) ($options[0] ?? 0);
+    $num     = max(1, (int) ($options[1] ?? 20));
+    $opts    = '';
+    foreach (Jill_query::menu_options(true) as $qsn => $title) {
+        $selected = ($qsn === $default) ? ' selected' : '';
+        $opts .= "<option value='{$qsn}'{$selected}>{$title}</option>";
+    }
+    return "<div class='mb-2'><label for='jq_pub_opt0'>" . _MB_JILL_QUERY_PUBLIC_OPT0 . "</label>
+        <select name='options[0]' id='jq_pub_opt0' class='form-select'><option value=''>" . _MB_JILL_QUERY__OPT0 . "</option>{$opts}</select></div>
+        <div class='mb-2'><label for='jq_pub_opt1'>" . _MB_JILL_QUERY_PUBLIC_OPT1 . "</label>
+        <input type='number' min='1' max='200' name='options[1]' id='jq_pub_opt1' value='{$num}' class='form-control'></div>";
 }

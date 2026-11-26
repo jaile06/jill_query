@@ -64,7 +64,7 @@ class Update
     {
         global $xoopsDB;
         $sql = 'ALTER TABLE ' . $xoopsDB->prefix('jill_query') . " ADD `tag_sn` SMALLINT(5) UNSIGNED NOT NULL  COMMENT '標籤編號'  AFTER `read_group` ";
-        $xoopsDB->queryF($sql);
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     }
 
     //新增標籤
@@ -90,8 +90,8 @@ class Update
             `color` varchar(255) NOT NULL default '' COMMENT '顏色',
             `enable` enum('0','1') NOT NULL default '1' COMMENT '是否啟用',
             PRIMARY KEY  (`tag_sn`)
-        )";
-        $xoopsDB->queryF($sql);
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     }
 
     //檢查qcsn 欄位為第一

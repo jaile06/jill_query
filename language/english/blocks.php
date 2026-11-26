@@ -16,11 +16,6 @@
  * @author     jill lee(tnjaile@gmail.com)
  * @version    $Id $
  **/
-define('_MD_JILLQUERY_PASSWD','Enter the query password');
 define('_MB_JILL_QUERY_PUBLIC_OPT0','Select public events');
 define('_MB_JILL_QUERY__OPT0','Select query event');
-define('_MD_JILLQUERY_SEARCH','Query now');
-define('_MD_REQUIRED','*This column must be filled in before you can make a query');
-define('_MD_OPTIONAL','*This column is optional');
 define('_MB_JILL_QUERY_PUBLIC_OPT1','Number of shows');
-define('_MD_JILLQUERY_ROW','Column');

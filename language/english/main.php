@@ -65,3 +65,8 @@ define('_MD_JILLQUERY_STEP', 'Step');
 define('_MD_JILLQUERY_STEP2', 'Import an Excel file, the first line must be the field name');
 define('_MD_JILLQUERY_PASSWDERROR', 'Password input error');
 define('_MD_JILLQUERY_PASSWD', 'Enter the query password');
+define('_MD_JILLQUERY_NEED_TADBASE', 'Please install the tad_base module (PhpSpreadsheet) to read or write Excel files');
+define('_MD_JILLQUERY_NEED_LOGIN', 'Please log in to use this query');
+define('_MD_JILLQUERY_USER_NAME', 'Name');
+define('_MD_JILLQUERY_NEED_ZIP', 'The PHP zip extension is not enabled, so .xlsx files cannot be read. Save as .xls, or enable extension=zip in php.ini');
+define('_MD_JILLQUERY_BAD_FILE', 'Only .xlsx or .xls files are accepted, or the file could not be read');

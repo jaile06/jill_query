@@ -16,11 +16,6 @@
  * @author     jill lee(tnjaile@gmail.com)
  * @version    $Id $
  **/
-define('_MD_JILLQUERY_PASSWD', '輸入查詢密碼');
 define('_MB_JILL_QUERY_PUBLIC_OPT0', '選擇公開事件');
 define('_MB_JILL_QUERY__OPT0', '選擇查詢事件');
-define('_MD_JILLQUERY_SEARCH', '立即查詢');
-define('_MD_REQUIRED', '*此欄必填方可進行查詢');
-define('_MD_OPTIONAL', '*此欄選填');
 define('_MB_JILL_QUERY_PUBLIC_OPT1', '秀筆數');
-define('_MD_JILLQUERY_ROW', '列');
